@@ -61,7 +61,7 @@ def main():
         if level <= args.verbose:
             print(message)
 
-    log('Authenticating')
+    log('Authenticating', 1)
     api = RedApi(config.get('redacted', 'username'), config.get('redacted', 'password'))
 
     log("Authenticated as user id {}".format(api.userid), 1)
@@ -71,7 +71,7 @@ def main():
 
     found_count = 0
     while args.count > found_count or args.count < 0:
-        log('Grabbing better list')
+        log('Grabbing better list', 1)
         torrents = api.get_better(args.better)
         for torrent in torrents:
             if torrent['groupYear'] < args.year:
