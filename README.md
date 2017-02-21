@@ -15,7 +15,7 @@ optional arguments:
   -b BETTER, --better BETTER
                         better transcode search type (default: 3)
   -c COUNT, --count COUNT
-                        maximum amount to queue (-1 for infinite) (default: 5)
+                        maximum amount to queue (-1 for infinite) (default: 5)https://github.com/Mechazawa/RedBetter-WM2/blob/master/redbetter-wm2
   -y YEAR, --year YEAR  minimum release year (default: 2016)
   -t INCLUDE, --include INCLUDE
                         required comma separated tags (default: None)

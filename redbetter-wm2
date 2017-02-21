@@ -11,6 +11,7 @@ from redapi import RedApi
 from os import path
 from sys import exit
 from time import sleep
+from datetime import datetime
 
 # cannonball approach but it werks (tm)
 reload(sys)
@@ -23,7 +24,7 @@ def main():
                         default=5)
     parser.add_argument('-b', '--better', type=int, help='better transcode search type', default=3)
     parser.add_argument('-c', '--count', type=int, help='maximum amount to queue (-1 for infinite)', default=5)
-    parser.add_argument('-y', '--year', type=int, help='minimum release year', default=2016)
+    parser.add_argument('-y', '--year', type=int, help='minimum release year', default=datetime.now().year - 1)
     parser.add_argument('-t', '--include', type=str, help='required comma separated tags', default=None)
     parser.add_argument('-T', '--exclude', type=str, help='excluded comma separated tags', default=None)
     parser.add_argument('-w', '--wait', type=int, help='wait X seconds between snatches', default=3)
