@@ -24,6 +24,8 @@ def main():
     parser.add_argument('-b', '--better', type=int, help='better transcode search type', default=3)
     parser.add_argument('-c', '--count', type=int, help='maximum amount to queue (-1 for infinite)', default=5)
     parser.add_argument('-y', '--year', type=int, help='minimum release year', default=2016)
+    parser.add_argument('-t', '--include', type=str, help='required comma sepeprated tags', default=None)
+    parser.add_argument('-T', '--exclude', type=str, help='excluded comma sepperated tags', default=None)
     parser.add_argument('-w', '--wait', type=int, help='wait X seconds between snatches', default=3)
     parser.add_argument('--320', action='store_true', help='Require 320 to be missing', default=False)
     parser.add_argument('--V0', action='store_true', help='Require V0 to be missing', default=False)
@@ -72,8 +74,25 @@ def main():
             if torrent_info['torrent']['snatched'] < args.snatches:
                 continue
 
+            tags_included = [tag.strip() for tag in args.include.lower().split(',')] if args.include else []
+            tags_excluded = [tag.strip() for tag in args.exclude.lower().split(',')] if args.exclude else []
+
+            skip = False
+            for tag in torrent_info['group']['tags']:
+                tag = tag.lower()
+                if len(tags_excluded) > 0 and tag in tags_excluded:
+                    skip = True
+                    break
+
+                if len(tags_included) > 0 and tag not in tags_included:
+                    skip = True
+                    break
+
+            if skip:
+                continue
+
             found_count += 1
-            count_text = ''
+            count_text = '#{} '.format(found_count)
             if args.count >= 0:
                 count_text = "{}/{} ".format(found_count, args.count)
 
