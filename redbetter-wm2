@@ -28,6 +28,7 @@ def main():
     parser.add_argument('-T', '--exclude', type=str, help='excluded comma sepperated tags', default=None)
     parser.add_argument('-w', '--wait', type=int, help='wait X seconds between snatches', default=3)
     parser.add_argument('--dry-run', action='store_true', help='don\'t snatch any torrents')
+    parser.add_argument('--verbose', '-v', action='count', help='verbosity level (up to -vv)')
     parser.add_argument('--config', help='the location of the configuration file',
                         default=path.expanduser('~/.config/redbetter'))
 
@@ -55,36 +56,50 @@ def main():
         print("Please fill in the config at {}".format(args.config))
         exit(2)
 
-    print("Authenticating")
+    # yeah I know it's messy
+    def log(message, level=0):
+        if level <= args.verbose:
+            print(message)
+
+    log('Authenticating')
     api = RedApi(config.get('redacted', 'username'), config.get('redacted', 'password'))
+
+    log("Authenticated as user id {}".format(api.userid), 1)
 
     tags_included = [tag.strip() for tag in args.include.lower().split(',')] if args.include else []
     tags_excluded = [tag.strip() for tag in args.exclude.lower().split(',')] if args.exclude else []
 
     found_count = 0
     while args.count > found_count or args.count < 0:
-        print("Grabbing better list")
+        log('Grabbing better list')
         torrents = api.get_better(args.better)
         for torrent in torrents:
             if torrent['groupYear'] < args.year:
+                log("Torrent {} too old: {}. Skipping...".format(torrent['torrentId'], torrent['groupYear']), 2)
                 continue
 
             torrent_info = api.request('torrent', id=torrent['torrentId'])
             if torrent_info['torrent']['snatched'] < args.snatches:
+                log("Torrent {} not enough snatches: {}. Skipping..."
+                    .format(torrent['torrentId'], torrent_info['torrent']['snatched']), 2)
                 continue
 
             skip = False
             for tag in torrent_info['group']['tags']:
                 tag = tag.lower()
-                if len(tags_excluded) > 0 and tag in tags_excluded:
-                    skip = True
-                    break
-
-                if len(tags_included) > 0 and tag not in tags_included:
+                if tag in tags_excluded:
+                    log("Torrent {} has excluded tag: {}. Skipping...".format(torrent['torrentId'], tag), 2)
                     skip = True
                     break
 
             if skip:
+                continue
+
+            if False in [(tag in torrent_info['group']['tags']) for tag in tags_included]:
+                log("Torrent {} is missing tags. Expected: {}, got: {}. Skipping..."
+                    .format(torrent['torrentId'],
+                            ','.join(tags_included),
+                            ','.join(torrent_info['group']['tags'])), 2)
                 continue
 
             found_count += 1
@@ -97,17 +112,20 @@ def main():
                     "Se {torrent[seeders]} Le {torrent[leechers]} Sn {torrent[snatched]}"
                     .format(count_text=count_text, **torrent_info))
 
-            print(line)
+            log(line)
 
             if not args.dry_run:
                 request_transcode(
                     config.get('whatmanager', 'url'), config.get('whatmanager', 'username'),
                     config.get('whatmanager', 'password'), torrent['torrentId']
                 )
+            else:
+                log('Dry run, skipping...', 1)
 
             if config.get('pushjet', 'secret'):
+                log('Sending Pushjet notification', 1)
                 data = dict(message=line, secret=config.get('pushjet', 'secret'))
-                requests.post("https://api.pushjet.io/message", data=data)
+                requests.post('https://api.pushjet.io/message', data=data)
 
             if found_count >= args.count:
                 break
