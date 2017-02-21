@@ -27,8 +27,6 @@ def main():
     parser.add_argument('-t', '--include', type=str, help='required comma sepeprated tags', default=None)
     parser.add_argument('-T', '--exclude', type=str, help='excluded comma sepperated tags', default=None)
     parser.add_argument('-w', '--wait', type=int, help='wait X seconds between snatches', default=3)
-    parser.add_argument('--320', action='store_true', help='Require 320 to be missing', default=False)
-    parser.add_argument('--V0', action='store_true', help='Require V0 to be missing', default=False)
     parser.add_argument('--config', help='the location of the configuration file',
                         default=path.expanduser('~/.config/redbetter'))
 
@@ -61,12 +59,6 @@ def main():
         print("Grabbing better list")
         torrents = api.get_better(args.better)
         for torrent in torrents:
-            for x in ['320', 'V0']:
-
-                assert isinstance(args, argparse.Namespace)
-                if args.__dict__[x] and not torrent["missing{}".format(x)]:
-                    continue
-
             if torrent['groupYear'] < args.year:
                 continue
 
