@@ -97,22 +97,15 @@ def main():
             if skip:
                 continue
 
-            if False in [(tag in torrent_info['group']['tags']) for tag in tags_included]:
-                log("Torrent {} is missing tags. Expected: {}, got: {}. Skipping..."
-                    .format(torrent['torrentId'],
-                            ','.join(tags_included),
-                            ','.join(torrent_info['group']['tags'])), 2)
-                continue
-
             found_count += 1
             count_text = '#{} '.format(found_count)
             if args.count >= 0:
                 count_text = "{}/{} ".format(found_count, args.count)
 
             line = ("{count_text}Snatching [{torrent[id]}] {group[musicInfo][artists][0][name]} - "
-                    "{group[name]} ({group[year]}) | "
+                    "{group[name]} ({group[year]}) | {tags} | "
                     "Se {torrent[seeders]} Le {torrent[leechers]} Sn {torrent[snatched]}"
-                    .format(count_text=count_text, **torrent_info))
+                    .format(count_text=count_text, tags=', '.join(torrent_info['group']['tags']), **torrent_info))
 
             if args.dry_run:
                 line += ' | DRY'
