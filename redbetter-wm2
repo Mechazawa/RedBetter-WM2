@@ -27,6 +27,7 @@ def main():
     parser.add_argument('-t', '--include', type=str, help='required comma sepeprated tags', default=None)
     parser.add_argument('-T', '--exclude', type=str, help='excluded comma sepperated tags', default=None)
     parser.add_argument('-w', '--wait', type=int, help='wait X seconds between snatches', default=3)
+    parser.add_argument('--dry-run', action='store_true', help='don\'t snatch any torrents')
     parser.add_argument('--config', help='the location of the configuration file',
                         default=path.expanduser('~/.config/redbetter'))
 
@@ -47,6 +48,7 @@ def main():
         config.set('whatmanager', 'password', '')
         config.set('whatmanager', 'url', 'https://seedbox.example.com/transcode/request')
         config.add_section('pushjet')
+        config.set('pushjet', '; optional')
         config.set('pushjet', 'secret', '')
         config.write(open(args.config, 'w'))
 
@@ -55,6 +57,9 @@ def main():
 
     print("Authenticating")
     api = RedApi(config.get('redacted', 'username'), config.get('redacted', 'password'))
+
+    tags_included = [tag.strip() for tag in args.include.lower().split(',')] if args.include else []
+    tags_excluded = [tag.strip() for tag in args.exclude.lower().split(',')] if args.exclude else []
 
     found_count = 0
     while args.count > found_count >= 0:
@@ -67,9 +72,6 @@ def main():
             torrent_info = api.request('torrent', id=torrent['torrentId'])
             if torrent_info['torrent']['snatched'] < args.snatches:
                 continue
-
-            tags_included = [tag.strip() for tag in args.include.lower().split(',')] if args.include else []
-            tags_excluded = [tag.strip() for tag in args.exclude.lower().split(',')] if args.exclude else []
 
             skip = False
             for tag in torrent_info['group']['tags']:
@@ -97,10 +99,11 @@ def main():
 
             print(line)
 
-            request_transcode(
-                config.get('whatmanager', 'url'), config.get('whatmanager', 'username'),
-                config.get('whatmanager', 'password'), torrent['torrentId']
-            )
+            if not args.dry_run:
+                request_transcode(
+                    config.get('whatmanager', 'url'), config.get('whatmanager', 'username'),
+                    config.get('whatmanager', 'password'), torrent['torrentId']
+                )
 
             if config.get('pushjet', 'secret'):
                 data = dict(message=line, secret=config.get('pushjet', 'secret'))
