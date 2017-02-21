@@ -18,9 +18,9 @@ optional arguments:
                         maximum amount to queue (-1 for infinite) (default: 5)
   -y YEAR, --year YEAR  minimum release year (default: 2016)
   -t INCLUDE, --include INCLUDE
-                        required comma sepeprated tags (default: None)
+                        required comma separated tags (default: None)
   -T EXCLUDE, --exclude EXCLUDE
-                        excluded comma sepperated tags (default: None)
+                        excluded comma separated tags (default: None)
   -w WAIT, --wait WAIT  wait X seconds between snatches (default: 3)
   --dry-run             don't snatch any torrents (default: False)
   --verbose, -v         verbosity level (up to -vv) (default: None)
