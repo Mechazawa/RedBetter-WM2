@@ -46,6 +46,8 @@ def main():
         config.set('whatmanager', 'username', '')
         config.set('whatmanager', 'password', '')
         config.set('whatmanager', 'url', 'https://seedbox.example.com/transcode/request')
+        config.add_section('pushjet')
+        config.set('pushjet', 'secret', '')
         config.write(open(args.config, 'w'))
 
         print("Please fill in the config at {}".format(args.config))
@@ -88,15 +90,21 @@ def main():
             if args.count >= 0:
                 count_text = "{}/{} ".format(found_count, args.count)
 
-            print("{count_text}Snatching [{torrent[id]}] {group[musicInfo][artists][0][name]} - "
-                  "{group[name]} ({group[year]}) | "
-                  "Se {torrent[seeders]} Le {torrent[leechers]} Sn {torrent[snatched]}"
-                  .format(count_text=count_text, **torrent_info))
+            line = ("{count_text}Snatching [{torrent[id]}] {group[musicInfo][artists][0][name]} - "
+                    "{group[name]} ({group[year]}) | "
+                    "Se {torrent[seeders]} Le {torrent[leechers]} Sn {torrent[snatched]}"
+                    .format(count_text=count_text, **torrent_info))
+
+            print(line)
 
             request_transcode(
                 config.get('whatmanager', 'url'), config.get('whatmanager', 'username'),
                 config.get('whatmanager', 'password'), torrent['torrentId']
             )
+
+            if config.get('pushjet', 'secret'):
+                data = dict(message=line, secret=config.get('pushjet', 'secret'))
+                requests.post("https://api.pushjet.io/message", data=data)
 
             if found_count >= args.count:
                 break
