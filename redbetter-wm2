@@ -18,7 +18,7 @@ sys.setdefaultencoding('utf-8')
 
 
 def main():
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter, prog='whatbetter')
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter, prog='redbetter-wm2')
     parser.add_argument('-s', '--snatches', type=int, help='minimum amount of snatches required before transcoding',
                         default=5)
     parser.add_argument('-b', '--better', type=int, help='better transcode search type', default=3)
