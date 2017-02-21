@@ -4,7 +4,7 @@ Redbetter does not scrape the better.php HTML. This means that it's fine to use.
 
 ```
 usage: redbetter-wm2 [-h] [-s SNATCHES] [-b BETTER] [-c COUNT] [-y YEAR]
-                     [-w WAIT] [--320] [--V0] [--config CONFIG]
+                     [-t INCLUDE] [-T EXCLUDE] [-w WAIT] [--config CONFIG]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -16,9 +16,11 @@ optional arguments:
   -c COUNT, --count COUNT
                         maximum amount to queue (-1 for infinite) (default: 5)
   -y YEAR, --year YEAR  minimum release year (default: 2016)
+  -t INCLUDE, --include INCLUDE
+                        required comma sepeprated tags (default: None)
+  -T EXCLUDE, --exclude EXCLUDE
+                        excluded comma sepperated tags (default: None)
   -w WAIT, --wait WAIT  wait X seconds between snatches (default: 3)
-  --320                 Require 320 to be missing (default: False)
-  --V0                  Require V0 to be missing (default: False)
   --config CONFIG       the location of the configuration file (default:
                         /Users/shodan/.config/redbetter)
 ```
@@ -47,4 +49,8 @@ password =
 username = 
 password = 
 url = https://seedbox.example.com/transcode/request
+
+[pushjet]
+; optional
+secret = 
 ```
