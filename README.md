@@ -4,7 +4,8 @@ Redbetter does not scrape the better.php HTML. This means that it's fine to use.
 
 ```
 usage: redbetter-wm2 [-h] [-s SNATCHES] [-b BETTER] [-c COUNT] [-y YEAR]
-                     [-t INCLUDE] [-T EXCLUDE] [-w WAIT] [--config CONFIG]
+                     [-t INCLUDE] [-T EXCLUDE] [-w WAIT] [--dry-run]
+                     [--config CONFIG]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -21,6 +22,7 @@ optional arguments:
   -T EXCLUDE, --exclude EXCLUDE
                         excluded comma sepperated tags (default: None)
   -w WAIT, --wait WAIT  wait X seconds between snatches (default: 3)
+  --dry-run             don't snatch any torrents (default: False)
   --config CONFIG       the location of the configuration file (default:
                         /Users/shodan/.config/redbetter)
 ```
