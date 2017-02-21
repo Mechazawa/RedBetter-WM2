@@ -32,13 +32,10 @@ optional arguments:
 
 ```
 $ ./redbetter-wm2.py --year 2010 -s 1
-Authenticating
-Grabbing better list
 1/5 Snatching [96548] Alex Anwandter - Amiga (2016) | Se 11 Le 0 Sn 3
 2/5 Snatching [271405] Reina del Cid - Let&rsquo;s Begin (2011) | Se 2 Le 0 Sn 2
 3/5 Snatching [325775] Aradia Ensemble - Theatre Music 2 (2016) | Se 7 Le 0 Sn 2
 4/5 Snatching [250444] HyunA (현아) - A Talk (2014) | Se 3 Le 0 Sn 1
-Grabbing better list
 5/5 Snatching [356234] Laughing Buddha - - Sacred Technology (Nano Rec.) (2010) | Se 1 Le 0 Sn 1
 ```
 
