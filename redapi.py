@@ -219,8 +219,10 @@ class RedApi:
     def permalink(self, torrent):
         return "https://passtheheadphones.me/torrents.php?torrentid=%s" % torrent['id']
 
-    def get_better(self, _type=3):
-        return self.request('better', method='transcode', type=_type)
+    def get_better(self, _type=3, tags=None):
+        if tags is None:
+            tags = []
+        return self.request('better', method='transcode', type=_type, search=' '.join(tags))
 
     def get_torrent(self, torrent_id):
         """Downloads the torrent at torrent_id using the authkey and passkey"""

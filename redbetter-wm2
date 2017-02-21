@@ -73,7 +73,8 @@ def main():
     found_count = 0
     while args.count > found_count or args.count < 0:
         log('Grabbing better list', 1)
-        torrents = api.get_better(args.better)
+        torrents = api.get_better(args.better, tags_included)
+        log('Checking {} torrents'.format(len(torrents)))
         for torrent in torrents:
             if torrent['groupYear'] < args.year:
                 log("Torrent {} too old: {}. Skipping...".format(torrent['torrentId'], torrent['groupYear']), 2)
@@ -113,6 +114,9 @@ def main():
                     "Se {torrent[seeders]} Le {torrent[leechers]} Sn {torrent[snatched]}"
                     .format(count_text=count_text, **torrent_info))
 
+            if args.dry_run:
+                line += ' | DRY'
+
             log(line)
 
             if not args.dry_run:
@@ -120,15 +124,13 @@ def main():
                     config.get('whatmanager', 'url'), config.get('whatmanager', 'username'),
                     config.get('whatmanager', 'password'), torrent['torrentId']
                 )
-            else:
-                log('Dry run, skipping...', 1)
 
             if config.get('pushjet', 'secret'):
                 log('Sending Pushjet notification', 1)
                 data = dict(message=line, secret=config.get('pushjet', 'secret'))
                 requests.post('https://api.pushjet.io/message', data=data)
 
-            if found_count >= args.count:
+            if found_count >= args.count >= 0:
                 break
 
             sleep(args.wait)
