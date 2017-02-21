@@ -35,7 +35,7 @@ def main():
 
     config = configparser.ConfigParser()
     try:
-        open(args.config)
+        open(args.config).close()
         config.read(args.config)
     except:
         if not path.exists(path.dirname(args.config)):
