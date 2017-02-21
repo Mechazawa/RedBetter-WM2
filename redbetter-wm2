@@ -62,7 +62,7 @@ def main():
     tags_excluded = [tag.strip() for tag in args.exclude.lower().split(',')] if args.exclude else []
 
     found_count = 0
-    while args.count > found_count >= 0:
+    while args.count > found_count or args.count < 0:
         print("Grabbing better list")
         torrents = api.get_better(args.better)
         for torrent in torrents:
