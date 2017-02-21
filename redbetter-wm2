@@ -105,7 +105,7 @@ def main():
             line = ("{count_text}Snatching [{torrent[id]}] {group[musicInfo][artists][0][name]} - "
                     "{group[name]} ({group[year]}) | {tags} | "
                     "Se {torrent[seeders]} Le {torrent[leechers]} Sn {torrent[snatched]}"
-                    .format(count_text=count_text, tags=', '.join(torrent_info['group']['tags']), **torrent_info))
+                    .format(count_text=count_text, tags=','.join(torrent_info['group']['tags']), **torrent_info))
 
             if args.dry_run:
                 line += ' | DRY'
