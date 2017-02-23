@@ -25,10 +25,11 @@ optional arguments:
   --dry-run             don't snatch any torrents (default: False)
   --verbose, -v         verbosity level (up to -vv) (default: None)
   --config CONFIG       the location of the configuration file (default:
-                        /Users/shodan/.config/redbetter)
+                        ~/.config/redbetter)
 ```
 
 ## Example output
+Config can be found at `~/.config/redbetter`
 
 ```
 $ ./redbetter-wm2.py --year 2010 -s 1

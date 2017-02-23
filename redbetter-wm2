@@ -50,7 +50,10 @@ def main():
         config.set('whatmanager', 'password', '')
         config.set('whatmanager', 'url', 'https://seedbox.example.com/transcode/request')
         config.add_section('pushjet')
-        config.set('pushjet', '; optional')
+        try:
+            config.set('pushjet', '; optional')
+        except TypeError:
+            pass
         config.set('pushjet', 'secret', '')
         config.write(open(args.config, 'w'))
 
