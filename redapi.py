@@ -13,7 +13,7 @@ except ImportError:
 headers = {
     'Connection': 'keep-alive',
     'Cache-Control': 'max-age=0',
-    'User-Agent': 'RedBetter crawler',
+    'User-Agent': 'RedApi',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Encoding': 'gzip,deflate,sdch',
     'Accept-Language': 'en-US,en;q=0.8',
@@ -74,6 +74,7 @@ class RedApi:
     def __init__(self, username=None, password=None):
         self.session = requests.Session()
         self.session.headers.update(headers)
+        self.session.headers['User-Agent'] += ' [{}]'.format(username)
         self.username = username
         self.password = password
         self.authkey = None
@@ -81,12 +82,33 @@ class RedApi:
         self.userid = None
         self.tracker = "https://flacsfor.me/"
         self.last_request = time.time()
-        self.rate_limit = 2.0 # seconds between requests
+        self.rate_limit_cool_down = 10
+        self.rate_limit_max = 5
+        self._rate_limit_table = []
+
         self._login()
+
+    def _rate_limit(self):
+        """This method is blocking"""
+        self._rate_limit_update()
+        if self.rate_limit_max <= len(self._rate_limit_table):
+            sleep_time = min(self._rate_limit_table) + self.rate_limit_cool_down
+            sleep_time -= time.time()
+            time.sleep(sleep_time)
+            self._rate_limit()  # should sleep again if needed. In practice this should never happen
+
+        self._rate_limit_table.append(time.time())
+        return True
+
+    def _rate_limit_update(self):
+        self._rate_limit_table = list(filter(
+            lambda x: x + self.rate_limit_cool_down > time.time(),
+            self._rate_limit_table
+        ))
 
     def _login(self):
         """Logs in user and gets authkey from server"""
-        loginpage = 'https://passtheheadphones.me/login.php'
+        loginpage = 'https://redacted.ch/login.php'
         data = {'username': self.username,
                 'password': self.password}
         r = self.session.post(loginpage, data=data)
@@ -98,14 +120,13 @@ class RedApi:
         self.userid = accountinfo['id']
 
     def logout(self):
-        self.session.get("https://passtheheadphones.me/logout.php?auth=%s" % self.authkey)
+        self.session.get("https://redacted.ch/logout.php?auth=%s" % self.authkey)
 
     def request(self, action, **kwargs):
         """Makes an AJAX request at a given action page"""
-        while time.time() - self.last_request < self.rate_limit:
-            time.sleep(0.1)
+        self._rate_limit()
 
-        ajaxpage = 'https://passtheheadphones.me/ajax.php'
+        ajaxpage = 'https://redacted.ch/ajax.php'
         params = {'action': action}
         if self.authkey:
             params['auth'] = self.authkey
@@ -121,10 +142,9 @@ class RedApi:
             raise RequestException
 
     def request_html(self, action, **kwargs):
-        while time.time() - self.last_request < self.rate_limit:
-            time.sleep(0.1)
+        self._rate_limit()
 
-        ajaxpage = 'https://passtheheadphones.me/' + action
+        ajaxpage = 'https://redacted.ch/' + action
         if self.authkey:
             kwargs['auth'] = self.authkey
         r = self.session.get(ajaxpage, params=kwargs, allow_redirects=False)
@@ -167,7 +187,7 @@ class RedApi:
         else:
             media_params = ['&media=%s' % media_search_map[m] for m in media]
 
-        url = 'https://passtheheadphones.me/torrents.php?type=snatched&userid=%s&format=FLAC' % self.userid
+        url = 'https://redacted.ch/torrents.php?type=snatched&userid=%s&format=FLAC' % self.userid
         for mp in media_params:
             page = 1
             done = False
@@ -181,7 +201,7 @@ class RedApi:
                 page += 1
 
     def upload(self, group, torrent, new_torrent, format, description=[]):
-        url = "https://passtheheadphones.me/upload.php?groupid=%s" % group['group']['id']
+        url = "https://redacted.ch/upload.php?groupid=%s" % group['group']['id']
         response = self.session.get(url)
         forms = mechanize.ParseFile(StringIO(response.text.encode('utf-8')), url)
         form = forms[-1]
@@ -205,7 +225,7 @@ class RedApi:
         return self.session.post(url, data=data, headers=dict(headers))
 
     def set_24bit(self, torrent):
-        url = "https://passtheheadphones.me/torrents.php?action=edit&id=%s" % torrent['id']
+        url = "https://redacted.ch/torrents.php?action=edit&id=%s" % torrent['id']
         response = self.session.get(url)
         forms = mechanize.ParseFile(StringIO(response.text.encode('utf-8')), url)
         form = forms[-3]
@@ -214,22 +234,21 @@ class RedApi:
         return self.session.post(url, data=data, headers=dict(headers))
 
     def release_url(self, group, torrent):
-        return "https://passtheheadphones.me/torrents.php?id=%s&torrentid=%s#torrent%s" % (group['group']['id'], torrent['id'], torrent['id'])
+        return "https://redacted.ch/torrents.php?id=%s&torrentid=%s#torrent%s" % (group['group']['id'], torrent['id'], torrent['id'])
 
     def permalink(self, torrent):
-        return "https://passtheheadphones.me/torrents.php?torrentid=%s" % torrent['id']
+        return "https://redacted.ch/torrents.php?torrentid=%s" % torrent['id']
 
-    def get_better(self, _type=3, tags=None):
+    def get_better(self, search_type=3, tags=None):
         if tags is None:
             tags = []
-        return self.request('better', method='transcode', type=_type, search=' '.join(tags))
+        return self.request('better', method='transcode', type=search_type, search=' '.join(tags))
 
     def get_torrent(self, torrent_id):
         """Downloads the torrent at torrent_id using the authkey and passkey"""
-        while time.time() - self.last_request < self.rate_limit:
-            time.sleep(0.1)
+        self._rate_limit()
 
-        torrentpage = 'https://passtheheadphones.me/torrents.php'
+        torrentpage = 'https://redacted.ch/torrents.php'
         params = {'action': 'download', 'id': torrent_id}
         if self.authkey:
             params['authkey'] = self.authkey
