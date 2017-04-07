@@ -29,7 +29,7 @@ def main():
     parser.add_argument('-T', '--exclude', type=str, help='excluded comma separated tags', default=None)
     parser.add_argument('-w', '--wait', type=int, help='wait X seconds between snatches', default=3)
     parser.add_argument('--dry-run', action='store_true', help='don\'t snatch any torrents')
-    parser.add_argument('--verbose', '-v', action='count', help='verbosity level (up to -vv)')
+    parser.add_argument('--verbose', '-v', action='count', help='verbosity level (up to -vv)', default=0)
     parser.add_argument('--config', help='the location of the configuration file',
                         default=path.expanduser('~/.config/redbetter'))
 
@@ -77,7 +77,7 @@ def main():
     while args.count > found_count or args.count < 0:
         log('Grabbing better list', 1)
         torrents = api.get_better(args.better, tags_included)
-        log('Checking {} torrents'.format(len(torrents)))
+        log('Checking {} torrents'.format(len(torrents)), 1)
         for torrent in torrents:
             if torrent['groupYear'] < args.year:
                 log("Torrent {} too old: {}. Skipping...".format(torrent['torrentId'], torrent['groupYear']), 2)
@@ -113,7 +113,7 @@ def main():
             if args.dry_run:
                 line += ' | DRY'
 
-            log(line)
+            log(line, -1)
 
             if not args.dry_run:
                 request_transcode(
