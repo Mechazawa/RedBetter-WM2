@@ -33,6 +33,9 @@ def main():
     parser.add_argument('--config', help='the location of the configuration file',
                         default=path.expanduser('~/.config/redbetter'))
 
+    parser.add_argument('-W', '--rate-limit-window', type=int, help='size of rate limiter time window in seconds', default=10, metavar='SECONDS')
+    parser.add_argument('-r', '--rate-limit-max', type=int, help='max amount of requests per time window', default=5, metavar='N')
+
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
@@ -67,6 +70,9 @@ def main():
 
     log('Authenticating', 1)
     api = RedApi(config.get('redacted', 'username'), config.get('redacted', 'password'))
+
+    api.rate_limit_cool_down = args.rate_limit_window
+    api.rate_limit_max = args.rate_limit_max
 
     log("Authenticated as user id {}".format(api.userid), 1)
 
