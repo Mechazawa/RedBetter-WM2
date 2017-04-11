@@ -5,7 +5,7 @@ Redbetter does not scrape the better.php HTML. This means that it's fine to use.
 ```
 usage: ./redbetter-wm2 [-h] [-s SNATCHES] [-b BETTER] [-c COUNT] [-y YEAR]
                        [-t INCLUDE] [-T EXCLUDE] [-w WAIT] [--dry-run]
-                       [--verbose] [--config CONFIG]
+                       [--verbose] [--config CONFIG] [-W SECONDS] [-r N]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -15,7 +15,7 @@ optional arguments:
   -b BETTER, --better BETTER
                         better transcode search type (default: 3)
   -c COUNT, --count COUNT
-                        maximum amount to queue (-1 for infinite) (default: 5)https://github.com/Mechazawa/RedBetter-WM2/blob/master/redbetter-wm2
+                        maximum amount to queue (-1 for infinite) (default: 5)
   -y YEAR, --year YEAR  minimum release year (default: 2016)
   -t INCLUDE, --include INCLUDE
                         required comma separated tags (default: None)
@@ -23,9 +23,14 @@ optional arguments:
                         excluded comma separated tags (default: None)
   -w WAIT, --wait WAIT  wait X seconds between snatches (default: 3)
   --dry-run             don't snatch any torrents (default: False)
-  --verbose, -v         verbosity level (up to -vv) (default: None)
+  --verbose, -v         verbosity level (up to -vv) (default: 0)
   --config CONFIG       the location of the configuration file (default:
-                        ~/.config/redbetter)
+                        /Users/shodan/.config/redbetter)
+  -W SECONDS, --rate-limit-window SECONDS
+                        size of rate limiter time window in seconds (default:
+                        10)
+  -r N, --rate-limit-max N
+                        max amount of requests per time window (default: 5)
 ```
 
 ## Example output
