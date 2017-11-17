@@ -58,6 +58,8 @@ def allowed_transcodes(torrent):
     preemphasis = re.search(r"""pre[- ]?emphasi(s(ed)?|zed)""", torrent['remasterTitle'], flags=re.IGNORECASE)
     if preemphasis:
         return []
+    elif torrent['scene'] == "true":
+        return []
     else:
         return formats.keys()
 
